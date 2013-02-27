@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Tools" default="jar">
+	<!-- Initialize the Time Stamp -->
+	<tstamp>
+		<format property="YEAR" pattern="yyyy" />
+	</tstamp>
+
+	<dirname property="directory.base" file="${ant.file}" />
+	<property name="directory.lib" value="${directory.base}/libs" />
+	<property name="directory.build" value="${directory.base}/build" />
+	<property name="directory.test.results" value="${directory.base}/build/tests" />
+	<property name="directory.dist" value="${directory.base}/dist" />
+	<property name="java.compiler" value="${directory.base}/../java/jdk1.6.0_23/bin/javac.exe" />
+	<property name="directory.properties" value="${directory.base}/properties/local" />
+
+	<!-- Compiler options -->
+	<property name="compiler.debug" value="on" />
+	<property name="compiler.generate.no.warnings" value="off" />
+	<property name="compiler.max.memory" value="128m" />
+
+	<patternset id="compiler.resources">
+		<include name="**/?*.properties" />
+		<include name="**/?*.xml" />
+		<include name="**/?*.gif" />
+		<include name="**/?*.png" />
+		<include name="**/?*.jpeg" />
+		<include name="**/?*.jpg" />
+		<include name="**/?*.html" />
+		<include name="**/?*.dtd" />
+		<include name="**/?*.tld" />
+	</patternset>
+	
+	<patternset id="ignored.files">
+		<exclude name="**/CVS/**" />
+		<exclude name="**/SCCS/**" />
+		<exclude name="**/RCS/**" />
+		<exclude name="**/rcs/**" />
+		<exclude name="**/.DS_Store/**" />
+		<exclude name="**/.svn/**" />
+		<exclude name="**/.sbas/**" />
+		<exclude name="**/.IJI.*/**" />
+		<exclude name="**/vssver.scc/**" />
+		<exclude name="**/vssver2.scc/**" />
+	</patternset>
+
+	<path id="compile.classpath">
+		<pathelement location="${directory.build}" />
+		<pathelement location="${directory.build}/classes"/>
+		<pathelement location="${directory.base}/../libs/commons-configuration-1.7.jar" />
+		<pathelement location="${directory.base}/../libs/commons-collections-3.2.1.jar" />
+		<pathelement location="${directory.base}/../libs/commons-lang-2.6.jar" />
+		<pathelement location="${directory.base}/../libs/log4j-1.2.8.jar" />
+		<pathelement location="${directory.base}/../libs/itextpdf-5.2.1.jar" />
+		<pathelement location="${directory.base}/libs/gson-2.0.jar" />
+		<pathelement location="${directory.base}/libs/mongo-2.7.2.jar" />
+		<pathelement location="${directory.base}/libs/mail.jar" />
+		<pathelement location="${directory.base}/libs/gson-2.0.jar" />
+		<pathelement location="${directory.base}/../libs/junit-4.10.jar" />
+		<pathelement location="${directory.properties}" />
+
+	</path>
+	
+	<target name="init" description="Build initialization">
+		<!-- Create the time stamp -->
+		<tstamp />
+	</target>
+
+
+	<target name="clean" depends="init" description="Cleans build directories">
+		<delete dir="${directory.dist}" />
+		<mkdir dir="${directory.dist}" />
+		<delete dir="${directory.build}" />
+		<mkdir dir="${directory.build}" />
+		<mkdir dir="${directory.build}/classes" />
+		<mkdir dir="${directory.build}/tests" />
+	</target>
+
+	<target name="compile" depends="clean" description="Compiles all source code for project">
+		<javac includeantruntime="false" destdir="${directory.build}/classes" debug="${compiler.debug}"
+			nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}"
+			executable="${java.compiler}" fork="true" srcdir="${directory.base}/src">
+			<classpath refid="compile.classpath" />
+			<patternset refid="ignored.files" />
+		</javac>
+
+		<javac includeantruntime="false" destdir="${directory.build}/classes" debug="${compiler.debug}"
+			nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}"
+			executable="${java.compiler}" fork="true" srcdir="${directory.base}/test">
+			<classpath refid="compile.classpath" />
+			<patternset refid="ignored.files" />
+		</javac>
+
+		<copy todir="${directory.build}/classes">
+			<fileset dir="${directory.base}/src">
+				<patternset refid="compiler.resources" />
+				<type type="file" />
+			</fileset>
+		</copy>
+		<copy todir="${directory.build}/classes">
+			<fileset dir="${directory.base}/src">
+				<exclude name="java/**" />
+				<patternset refid="compiler.resources" />
+				<type type="file" />
+			</fileset>
+			<fileset dir="${directory.base}/test">
+				<exclude name="java/**" />
+				<patternset refid="compiler.resources" />
+				<type type="file" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile" description="Will build everything and jar it up">
+		<jar destfile="${directory.dist}/cmv-tools.jar">
+			<fileset dir="${directory.build}/classes"/>
+			<metainf dir="${directory.base}/META-INF" casesensitive="true" />
+		</jar>
+	</target>
+
+	<target name="junit-tests" depends="clean, compile" description="Tests everything after clean and compile">
+		<junit printsummary="yes" haltonfailure="no">
+			<classpath refid="compile.classpath" />
+
+			<formatter type="xml"/>
+			
+			<batchtest fork="yes" todir="${directory.test.results}">
+				<fileset dir="${directory.base}/test">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>	
+	</target>
+	
+</project>

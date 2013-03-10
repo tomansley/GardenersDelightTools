@@ -17,10 +17,6 @@ import org.apache.log4j.Logger;
 public abstract class BaseDAO {
 
 	//these are the JNDI connection pool names for the databases
-	public static final String DB_VIRALMESH = "viralmesh"; 
-	public static final String DB_JDKEYSTORE = "jdkeystore";
-	public static final String DB_SCHEDULER = "scheduler";
-
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	protected static final String PROP_CONTEXT_LOOKUP = "lookup";
@@ -53,7 +49,7 @@ public abstract class BaseDAO {
 	 * @return whether the data was written successfully or not.
 	 * @throws SQLException
 	 */
-	protected boolean addSimpleData(String database, String tablename, Properties properties) throws SQLException {
+	protected boolean addSimpleData(String tablename, Properties properties) throws SQLException {
 		log.debug("Starting addSimpleData");
 		
 		boolean result = false;
@@ -91,7 +87,7 @@ public abstract class BaseDAO {
 			sql.append(")");
 			
 			log.debug("SQL = " + sql);
-			PreparedStatement ps = getConnection(database).prepareStatement(sql.toString());
+			PreparedStatement ps = getConnection().prepareStatement(sql.toString());
 
 			int count = ps.executeUpdate(sql.toString());
 
@@ -152,7 +148,7 @@ public abstract class BaseDAO {
 			sql.delete(sql.lastIndexOf(","), sql.length()); //get rid of the last comma
 			
 			log.debug("SQL = " + sql);
-			PreparedStatement ps = getConnection(database).prepareStatement(sql.toString());
+			PreparedStatement ps = getConnection().prepareStatement(sql.toString());
 
 			int count = ps.executeUpdate(sql.toString());
 
@@ -201,7 +197,7 @@ public abstract class BaseDAO {
 			}
 
 			log.debug("SQL = " + sql);
-			PreparedStatement ps = getConnection(database).prepareStatement(sql.toString());
+			PreparedStatement ps = getConnection().prepareStatement(sql.toString());
 
 			//set the properties into the query
 			int i = 1;
@@ -260,17 +256,6 @@ public abstract class BaseDAO {
 		return dataList;
 	}
 
-	protected Connection getConnection(String database) throws SQLException {
-		Properties properties = new Properties();
-		properties.setProperty(PROP_CONTEXT_LOOKUP, "internal.database.jndi."+database+".lookup");
-		properties.setProperty(PROP_DB_URL, "internal.database.jdbc."+database+".url");
-		properties.setProperty(PROP_DB_USERNAME, "internal.database.jdbc."+database+".user");
-		properties.setProperty(PROP_DB_PASSWORD, "internal.database.jdbc."+database+".password");
-		properties.setProperty(PROP_DB_CLASS, "com.mysql.jdbc.Driver");
-
-		return getConnection(properties);
-	}
-
 	/**
 	 * Method to get a connection given a set of properties that determine where the connection will be retrieved from
 	 * This method can get a connection from JNDI or use JDBC based on the provided properties.
@@ -278,12 +263,14 @@ public abstract class BaseDAO {
 	 * @return the database connection.
 	 * @throws SQLException
 	 */
-	protected Connection getConnection(Properties properties) throws SQLException {
+	protected Connection getConnection() throws SQLException {
 		if (con == null || con.isClosed()) {
 
 			try {
+				Class.forName("com.mysql.jdbc.Driver");
 			    con = DriverManager.getConnection(System.getProperty("JDBC_CONNECTION_STRING"));
 			} catch (Exception e) {
+				e.printStackTrace();
 				log.warn("Initial Context could not get datasource named '" + System.getProperty("JDBC_CONNECTION_STRING") + "' through lookup");
 			}
 		}

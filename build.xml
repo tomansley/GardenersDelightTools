@@ -10,7 +10,7 @@
 	<property name="directory.build" value="${directory.base}/build" />
 	<property name="directory.test.results" value="${directory.base}/build/tests" />
 	<property name="directory.dist" value="${directory.base}/dist" />
-	<property name="java.compiler" value="${directory.base}/../java/jdk1.6.0_23/bin/javac.exe" />
+<!-- <property name="java.compiler" value="${directory.base}/../java/jdk1.6.0_23/bin/javac.exe" /> -->
 	<property name="directory.properties" value="${directory.base}/properties/local" />
 
 	<!-- Compiler options -->
@@ -46,15 +46,8 @@
 	<path id="compile.classpath">
 		<pathelement location="${directory.build}" />
 		<pathelement location="${directory.build}/classes"/>
-		<pathelement location="${directory.base}/../libs/commons-configuration-1.7.jar" />
-		<pathelement location="${directory.base}/../libs/commons-collections-3.2.1.jar" />
-		<pathelement location="${directory.base}/../libs/commons-lang-2.6.jar" />
-		<pathelement location="${directory.base}/../libs/log4j-1.2.8.jar" />
-		<pathelement location="${directory.base}/../libs/itextpdf-5.2.1.jar" />
-		<pathelement location="${directory.base}/libs/gson-2.0.jar" />
-		<pathelement location="${directory.base}/libs/mongo-2.7.2.jar" />
-		<pathelement location="${directory.base}/libs/mail.jar" />
-		<pathelement location="${directory.base}/libs/gson-2.0.jar" />
+		<pathelement location="${directory.base}/libs/log4j-1.2.8.jar" />
+		<pathelement location="${directory.base}/libs/gson-2.2.2.jar" />
 		<pathelement location="${directory.base}/../libs/junit-4.10.jar" />
 		<pathelement location="${directory.properties}" />
 
@@ -78,7 +71,7 @@
 	<target name="compile" depends="clean" description="Compiles all source code for project">
 		<javac includeantruntime="false" destdir="${directory.build}/classes" debug="${compiler.debug}"
 			nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}"
-			executable="${java.compiler}" fork="true" srcdir="${directory.base}/src">
+			fork="true" srcdir="${directory.base}/src">
 			<classpath refid="compile.classpath" />
 			<patternset refid="ignored.files" />
 		</javac>

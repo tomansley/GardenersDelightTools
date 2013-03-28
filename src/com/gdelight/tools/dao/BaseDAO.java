@@ -268,6 +268,10 @@ public abstract class BaseDAO {
 
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
+				
+				//String url = "jdbc:mysql://localhost:3306/gdelight?user=root&password=Afr1cansky";
+			    //con = DriverManager.getConnection(url);
+				
 			    con = DriverManager.getConnection(System.getProperty("JDBC_CONNECTION_STRING"));
 			} catch (Exception e) {
 				e.printStackTrace();

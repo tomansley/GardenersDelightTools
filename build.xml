@@ -104,7 +104,7 @@
 	</target>
 
 	<target name="jar" depends="compile" description="Will build everything and jar it up">
-		<jar destfile="${directory.dist}/cmv-tools.jar">
+		<jar destfile="${directory.dist}/gdelight-tools.jar">
 			<fileset dir="${directory.build}/classes"/>
 			<metainf dir="${directory.base}/META-INF" casesensitive="true" />
 		</jar>

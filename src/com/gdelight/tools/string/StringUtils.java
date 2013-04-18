@@ -78,4 +78,12 @@ public class StringUtils {
 		return result;
 	}
 	
+	public static String escapeIllegalSQLChars(String value) {
+		
+		value = value.replace("'", "\\'");
+		
+		return value;
+		
+	}
+	
 }
